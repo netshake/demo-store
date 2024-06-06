@@ -86,6 +86,16 @@
             {%- case block.type -%}
               {%- when '@app' -%}
                 {% render block %}
+              {%- when 'custom_reviews' %}
+                {% if product.metafields.custom.reviews.value != blank %}
+                  {% assign average = 0 %}
+                  {% assign reviews_len = product.metafields.custom.reviews.value.ratings | size %}
+                  {% for rating in product.metafields.custom.reviews.value.ratings %}
+                    {% assign average = average | plus: rating %}
+                  {% endfor %}
+                  {% assign average = average | divided_by: reviews_len | round: 2 %}
+                    <p style="margin: 0;">{{ 'products.product.reviews' | t: avg: average}}</p>
+                {% endif %}
               {%- when 'text' -%}
                 <p
                   class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
@@ -722,6 +732,10 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "custom_reviews",
+      "name": "Custom Reviews"
     },
     {
       "type": "text",
